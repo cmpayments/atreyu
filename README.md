@@ -49,7 +49,6 @@ caches any reflections it generates to minimize the potential performance impact
 * [Avoiding Evil Singletons](#avoiding-evil-singletons)
 * [Application Bootstrapping](#app-bootstrapping)
 
-#dependency-resolution-functionality-on-top-of-auryn
 ## Requirements and Installation
 
 - Atreyu requires PHP 5.4 or higher.
