@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 class ExtendedReflectionClass extends \ReflectionClass
 {
@@ -9,7 +9,7 @@ class ExtendedReflectionClass extends \ReflectionClass
      *
      * @var array
      */
-    protected $useStatements = array();
+    protected $useStatements = [];
 
     /**
      * Check if use statements have been parsed.
@@ -84,12 +84,12 @@ class ExtendedReflectionClass extends \ReflectionClass
         $buildingNamespace = false;
         $matchedNamespace  = false;
 
-        $useStatements = array();
+        $useStatements = [];
         $record        = false;
-        $currentUse    = array(
+        $currentUse    = [
             'class' => '',
             'as'    => ''
-        );
+        ];
 
         foreach ($tokens as $token) {
 
@@ -124,10 +124,10 @@ class ExtendedReflectionClass extends \ReflectionClass
                 if ($record) {
                     $useStatements[] = $currentUse;
                     $record          = false;
-                    $currentUse      = array(
+                    $currentUse      = [
                         'class' => '',
                         'as'    => ''
-                    );
+                    ];
                 }
 
                 continue;

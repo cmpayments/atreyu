@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 class InjectionException extends InjectorException
 {
@@ -49,7 +49,7 @@ class InjectionException extends InjectorException
                 $callableString
             );
         } else {
-            $message = \Auryn\Injector::M_INVOKABLE;
+            $message = \Atreyu\Injector::M_INVOKABLE;
         }
 
         return new self($inProgressMakes, $message, Injector::E_INVOKABLE, $previous);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 interface ReflectionCache
 {

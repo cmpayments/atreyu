@@ -1,10 +1,10 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 class ReflectionCacheArray implements ReflectionCache
 {
-    private $cache = array();
+    private $cache = [];
 
     public function fetch($key)
     {

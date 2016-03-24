@@ -1,14 +1,14 @@
 {
-    "name": "rdlowrey/auryn",
-    "homepage": "https://github.com/rdlowrey/auryn",
-    "description": "Auryn is a dependency injector for bootstrapping object-oriented PHP applications.",
+    "name": "cmpayments/atreyu",
+    "homepage": "https://github.com/cmpayments/atreyu",
+    "description": "Atreyu is a dependency injector for bootstrapping object-oriented PHP applications.",
     "keywords": ["dependency injection", "dic", "ioc"],
     "license": "MIT",
     "authors": [
         {
             "name": "Daniel Lowrey",
             "email": "rdlowrey@gmail.com",
-            "role": "Creator / Main Developer",
+            "role": "Creator",
             "homepage": "https://github.com/rdlowrey"
         },
         {
@@ -22,6 +22,12 @@
             "email": "Danack@basereality.com",
             "homepage": "http://www.basereality.com",
             "role": "Developer"
+        },
+        {
+            "name": "Boy Wijnmaalen",
+            "email": "boy.wijnmaalen@cmtelecom.com",
+            "role": "Developer",
+            "homepage": "https://github.com/boywijnmaalen"
         }
     ],
     "require": {
@@ -35,12 +41,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Auryn\\": "lib/"
+            "Atreyu\\": "lib/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Auryn\\Test\\": "test/"
+            "Atreyu\\Test\\": "test/"
         },
         "files": ["test/fixtures.php"]
     }

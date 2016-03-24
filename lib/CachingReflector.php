@@ -1,19 +1,19 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Context;
 
 class CachingReflector implements Reflector
 {
-    const CACHE_KEY_CLASSES = 'auryn.refls.classes.';
-    const CACHE_KEY_CTORS = 'auryn.refls.ctors.';
-    const CACHE_KEY_CTOR_PARAMS = 'auryn.refls.ctor-params.';
-    const CACHE_KEY_FUNCS = 'auryn.refls.funcs.';
-    const CACHE_KEY_METHODS = 'auryn.refls.methods.';
-    const CACHE_KEY_DOC_BLOCK = 'auryn.refls.doc-block.';
-    const CACHE_KEY_IMPLEMENTED = 'auryn.refls.implemented.';
+    const CACHE_KEY_CLASSES = 'atreyu.refls.classes.';
+    const CACHE_KEY_CTORS = 'atreyu.refls.ctors.';
+    const CACHE_KEY_CTOR_PARAMS = 'atreyu.refls.ctor-params.';
+    const CACHE_KEY_FUNCS = 'atreyu.refls.funcs.';
+    const CACHE_KEY_METHODS = 'atreyu.refls.methods.';
+    const CACHE_KEY_DOC_BLOCK = 'atreyu.refls.doc-block.';
+    const CACHE_KEY_IMPLEMENTED = 'atreyu.refls.implemented.';
 
     private $reflector;
     private $cache;
@@ -162,7 +162,7 @@ class CachingReflector implements Reflector
         $cacheKey = self::CACHE_KEY_IMPLEMENTED . strtolower($className);
 
         if (!$implemented = $this->cache->fetch($cacheKey)) {
-            $implemented = array_merge(array($className), class_implements($className));
+            $implemented = array_merge([$className], class_implements($className));
             $this->cache->store($cacheKey, $implemented);
         }
 

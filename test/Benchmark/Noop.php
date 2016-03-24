@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn\Test\Benchmark;
+namespace Atreyu\Test\Benchmark;
 
 class Noop
 {

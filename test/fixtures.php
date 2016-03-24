@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn\Test;
+namespace Atreyu\Test;
 
 class InaccessibleExecutableClassMethod
 {
@@ -728,7 +728,7 @@ class CloneTest
 {
     public $injector;
 
-    public function __construct(\Auryn\Injector $injector)
+    public function __construct(\Atreyu\Injector $injector)
     {
         $this->injector = clone $injector;
     }

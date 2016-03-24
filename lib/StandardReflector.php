@@ -1,6 +1,6 @@
 <?php
 
-namespace Auryn;
+namespace Atreyu;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Context;
@@ -62,6 +62,6 @@ class StandardReflector implements Reflector
 
     public function getImplemented($className)
     {
-        return array_merge(array($className), class_implements($className));
+        return array_merge([$className], class_implements($className));
     }
 }
