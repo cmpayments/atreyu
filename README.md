@@ -1,19 +1,26 @@
-# atreyu [![Build Status](https://travis-ci.org/rdlowrey/atreyu.svg?branch=master)](https://travis-ci.org/rdlowrey/atreyu)
+# Atreyu [![Build Status](https://travis-ci.org/cmpayments/atreyu.svg?branch=master)](https://travis-ci.org/cmpayments/atreyu)
 
-Atreyu is a recursive dependency injector. use Atreyu to bootstrap and wire together
+Atreyu is an extension of Auryn and is born out of the need to use typehinted parameters when 
+instantiating classes, if no typehinting is available the use of docblock to identify parameters 
+is also possible (as a fallback only).
+
+The main difference between Atreyu and Auryn is that Atreyu inspects type hinted method parameters.
+If the method parameters are not type hinted Atreyu will inspect the docblock 
+
+Atreyu is a recursive dependency injector based on Auryn. use Atreyu to bootstrap and wire together
 S.O.L.I.D., object-oriented PHP applications.
 
 ##### How It Works
 
-Among other things, atreyu recursively instantiates class dependencies based on the parameter
+Among other things, Atreyu recursively instantiates class dependencies based on the parameter
 type-hints specified in class constructor signatures. This requires the use of Reflection. You may
 have heard that "reflection is slow". Let's clear something up: *anything* can be "slow" if you're
 doing it wrong. Reflection is an order of magnitude faster than disk access and several orders of
 magnitude faster than retrieving information (for example) from a remote database. Additionally,
-each reflection offers the opportunity to cache the results if you're worried about speed. atreyu
+each reflection offers the opportunity to cache the results if you're worried about speed. Atreyu
 caches any reflections it generates to minimize the potential performance impact.
 
-> atreyu **is NOT** a Service Locator. DO NOT turn it into one by passing the injector into your
+> Atreyu **is NOT** a Service Locator. DO NOT turn it into one by passing the injector into your
 > application classes. Service Locator is an anti-pattern; it hides class dependencies, makes code
 > more difficult to maintain and makes a liar of your API! You should *only* use an injector for
 > wiring together the disparate parts of your application during your bootstrap phase.
@@ -35,6 +42,7 @@ caches any reflections it generates to minimize the potential performance impact
 * [Prepares and Setter Injection](#prepares-and-setter-injection)
 * [Injecting for Execution](#injecting-for-execution)
 * [Dependency Resolution](#dependency-resolution)
+* [Dependency Resolution functionality on top of Auryn](#dependency-resolution-on-top-of-Auryn)
 
 **Example Use Cases**
 
@@ -44,32 +52,32 @@ caches any reflections it generates to minimize the potential performance impact
 
 ## Requirements and Installation
 
-- atreyu requires PHP 5.3 or higher.
+- Atreyu requires PHP 5.4 or higher.
 
 #### Installation
 
 ###### Github
 
-You can clone the latest atreyu iteration at anytime from the github repository:
+You can clone the latest Atreyu iteration at anytime from the github repository:
 
 ```bash
-$ git clone git://github.com/rdlowrey/atreyu.git
+$ git clone git://github.com/cmpayments/atreyu.git
 ```
 
 ###### Composer
 
-You may also use composer to include atreyu as a dependency in your projects `composer.json`. The relevant package is `rdlowrey/atreyu`.
+You may also use composer to include Atreyu as a dependency in your projects `composer.json`. The relevant package is `cmpayments/atreyu`.
 
 Alternatively require the package using composer cli:
 
 ```bash
-composer require rdlowrey/atreyu
+composer require cmpayments/atreyu
 ```
 
 ##### Manual Download
 
 Archived tagged release versions are also available for manual download on the project
-[tags page](https://github.com/rdlowrey/atreyu/tags)
+[tags page](https://github.com/cmpayments/atreyu/tags)
 
 
 ## Basic Usage
@@ -354,10 +362,10 @@ $db = $injector->make('PDO');
 ```
 
 The colon character preceding the parameter names tells the Injector that the associated values ARE
-NOT class names. If the colons had been omitted above, atreyu would attempt to instantiate classes of
+NOT class names. If the colons had been omitted above, Atreyu would attempt to instantiate classes of
 the names specified in the string and an exception would result. Also, note that we could just as
 easily specified arrays or integers or any other data type in the above definitions. As long as the
-parameter name is prefixed with a `:`, atreyu will inject the value directly without attempting to
+parameter name is prefixed with a `:`, Atreyu will inject the value directly without attempting to
 instantiate it.
 
 > **NOTE:** As mentioned previously, since this `define()` call is passing raw values, you may opt to
@@ -369,7 +377,7 @@ array keys, like so:
 ### Global Parameter Definitions
 
 Sometimes applications may reuse the same value everywhere. However, it can be a hassle to manually
-specify definitions for this sort of thing everywhere it might be used in the app. atreyu mitigates
+specify definitions for this sort of thing everywhere it might be used in the app. Atreyu mitigates
 this problem by exposing the `Injector::defineParam()` method. Consider the following example ...
 
 ```php
@@ -410,7 +418,7 @@ and should generally be avoided. `Atreyu\Injector` makes sharing class instances
 triviality while allowing maximum testability and API transparency.
 
 Let's consider how a typical problem facing object-oriented web applications is easily solved by
-wiring together your application using atreyu. Here, we want to inject a single database connection
+wiring together your application using Atreyu. Here, we want to inject a single database connection
 instance across multiple layers of an application. We have a controller class that asks for a
 DataMapper that requires a `PDO` database connection instance:
 
@@ -481,7 +489,7 @@ instantiations of its type until the object is un-shared or refreshed:
 
 ### Instantiation Delegates
 
-Often factory classes/methods are used to prepare an object for use after instantiation. atreyu
+Often factory classes/methods are used to prepare an object for use after instantiation. Atreyu
 allows you to integrate factories and builders directly into the injection process by specifying
 callable instantiation delegates on a per-class basis. Let's look at a very basic example to
 demonstrate the concept of injection delegates:
@@ -559,7 +567,7 @@ var_dump($obj->value); // int(2)
 ### Prepares and Setter Injection
 
 Constructor injection is almost always preferable to setter injection. However, some APIs require
-additional post-instantiation mutations. atreyu accommodates these use cases with its
+additional post-instantiation mutations. Atreyu accommodates these use cases with its
 `Injector::prepare()` method. Users may register any class or interface name for post-instantiation
 modification. Consider:
 
@@ -583,7 +591,7 @@ While the above example is contrived, the usefulness should be clear.
 
 ### Injecting for Execution
 
-In addition to provisioning class instances using constructors, atreyu can also recursively instantiate
+In addition to provisioning class instances using constructors, Atreyu can also recursively instantiate
 the parameters of any [valid PHP callable](http://php.net/manual/en/language.types.callable.php).
 The following examples all work:
 
@@ -636,6 +644,109 @@ var_dump($injector->execute('Example::myMethod', $args = [':arg2' => 42]));
 7. If a global parameter value is defined that value is used
 8. Throw an exception because you did something stupid
 
+
+### Dependency Resolution functionality on top of Auryn
+
+```php
+<?php
+
+namespace Atreyu\Test;
+
+use Atreyu\Injector;
+
+interface DepInterface
+{
+}
+
+
+class TestDependency
+{
+    public $testProp = 'testVal';
+}
+
+
+class TestDependency2 extends TestDependency implements DepInterface
+{
+    public $testProp = 'testVal2';
+}
+
+
+class TestMultiDepsNeeded
+{
+    public function __construct(TestDependency $val1, DepInterface $val2)
+    {
+        $this->testDep  = $val1;
+        $this->testDep2 = $val2;
+    }
+}
+
+
+class TestMultiDepsNeededExample2
+{
+    /**
+     * TestMultiDepsNeededExample2 constructor.
+     *
+     * @param TestDependency $val1
+     * @param DepInterface   $val2
+     *
+     * @throws \Exception
+     */
+    public function __construct($val1, $val2)
+    {
+        if (!($val1 instanceof TestDependency)) {
+            throw new \Exception('param $val1 does not meet required input');
+        }
+
+        if (!($val2 instanceof TestDependency2)) {
+            throw new \Exception('param $val2 does not meet required input');
+        }
+
+        $this->testDep  = $val1;
+        $this->testDep2 = $val2;
+    }
+}
+```
+
+Previously not possible with the version of Auryn on which Atreyu is based;
+
+```php
+// try instantiate class 'TestMultiDepsNeeded'
+$injector = new Injector;
+$injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded', [new TestDependency2()]);
+
+// fails ...
+```
+
+The code above will not instantiate class ```'Atreyu\Test\TestMultiDepsNeeded'``` because Auryn (the version of Auryn on which Atreyu is based, will try to match the Entity passed in the second parameter of ```$injector->make()``` to ```TestMultiDepsNeeded::__construct(TestDependency $val1, [..]);```
+
+```php
+// try instantiate class 'TestMultiDepsNeeded'
+$injector = new Injector;
+$injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded', [new TestDependency2()]);
+
+// works now!
+```
+
+As of Atreyu 1.0 the same code mentioned above will execute nicely. Atreyu will now look for a particular parameter in the ```__construct()``` method which meets the Enity' class name (or one of it's implemented interfaces) and assign it to the correct parameter in the ```__construct()``` method.
+
+This is particularly handy when your are dynamically instantiating classes with a different amount of parameters and where the parameters are constantly in a different order.
+
+The following is also possible now;
+
+*please note that no parameters of ```TestMultiDepsNeededExample2::__construct()``` are type hinted, do mind its doc block which does specify type hinting*
+
+```php
+// try instantiate class 'TestMultiDepsNeededExample2'
+$injector = new Injector;
+$injected = $injector->make('Atreyu\Test\TestMultiDepsNeededExample2', [new TestDependency2()]);
+
+// also works now!
+```
+
+*please note*
+- When both method parameters are type hinted and a method doc block is set, the type hinted method parameters take precedence.
+
+
 ## Example Use Cases
 
 Dependency Injection Containers (DIC) are generally misunderstood in the PHP community. One of the
@@ -643,7 +754,7 @@ primary culprits is the misuse of such containers in the mainstream application 
 these frameworks warp their DICs into Service Locator anti-patterns. This is a shame because a
 good DIC should be the exact opposite of a Service Locator.
 
-###### atreyu Is NOT A Service Locator!
+###### Atreyu Is NOT A Service Locator!
 
 There's a galaxy of differences between using a DIC to wire together your application versus
 passing the DIC as a dependency to your objects (Service Locator). Service Locator (SL) is an
@@ -838,10 +949,10 @@ class WidgetController {
 }
 ```
 
-In the above example the atreyu DIC allows us to write fully testable, fully OO controllers that ask
+In the above example the Atreyu DIC allows us to write fully testable, fully OO controllers that ask
 for their dependencies. Because the DIC recursively instantiates the dependencies of objects it
 creates we have no need to pass around a Service Locator. Additionally, this example shows how we can
-eliminate evil Singletons using the sharing capabilities of the atreyu DIC. In the front controller
+eliminate evil Singletons using the sharing capabilities of the Atreyu DIC. In the front controller
 code, we share the request object so that any classes instantiated by the `Atreyu\Injector` that ask
 for a `Request` will receive the same instance. This feature not only helps eliminate Singletons,
 but also the need for hard-to-test `static` properties.

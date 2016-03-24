@@ -2,7 +2,7 @@
     "name": "cmpayments/atreyu",
     "homepage": "https://github.com/cmpayments/atreyu",
     "description": "Atreyu is a dependency injector for bootstrapping object-oriented PHP applications.",
-    "keywords": ["dependency injection", "dic", "ioc"],
+    "keywords": ["dependency injection", "dependency injector container", "dic", "ioc"],
     "license": "MIT",
     "authors": [
         {
@@ -31,7 +31,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.4.0",
         "phpdocumentor/reflection-docblock": "~2.0"
     },
     "require-dev": {
