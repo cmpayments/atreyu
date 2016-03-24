@@ -42,14 +42,14 @@ caches any reflections it generates to minimize the potential performance impact
 * [Prepares and Setter Injection](#prepares-and-setter-injection)
 * [Injecting for Execution](#injecting-for-execution)
 * [Dependency Resolution](#dependency-resolution)
-* [Dependency Resolution functionality on top of Auryn](#dependency-resolution-on-top-of-Auryn)
+* [Dependency Resolution functionality on top of Auryn](#dependency-resolution-on-top-of-auryn)
 
 **Example Use Cases**
 
 * [Avoiding Evil Singletons](#avoiding-evil-singletons)
 * [Application Bootstrapping](#app-bootstrapping)
 
-
+#dependency-resolution-functionality-on-top-of-auryn
 ## Requirements and Installation
 
 - Atreyu requires PHP 5.4 or higher.
