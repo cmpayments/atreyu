@@ -42,7 +42,7 @@ caches any reflections it generates to minimize the potential performance impact
 * [Prepares and Setter Injection](#prepares-and-setter-injection)
 * [Injecting for Execution](#injecting-for-execution)
 * [Dependency Resolution](#dependency-resolution)
-* [Dependency Resolution functionality on top of Auryn](#dependency-resolution-on-top-of-auryn)
+* [Dependency Resolution functionality on top of Auryn](#dependency-resolution-functionality-on-top-of-auryn)
 
 **Example Use Cases**
 
@@ -642,7 +642,6 @@ var_dump($injector->execute('Example::myMethod', $args = [':arg2' => 42]));
 6. If no type-hint exists and the parameter has a default value, the default value is injected
 7. If a global parameter value is defined that value is used
 8. Throw an exception because you did something stupid
-
 
 ### Dependency Resolution functionality on top of Auryn
 
