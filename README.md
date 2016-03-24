@@ -1,6 +1,6 @@
 # Atreyu [![Build Status](https://travis-ci.org/cmpayments/atreyu.svg?branch=master)](https://travis-ci.org/cmpayments/atreyu)
 
-Atreyu is an extension of Auryn and is born out of the need to use typehinted parameters when 
+Atreyu is an extension of [Auryn](https://github.com/rdlowrey/auryn) and is born out of the need to use typehinted parameters when 
 instantiating classes, if no typehinting is available the use of docblock to identify parameters 
 is also possible (as a fallback only).
 
