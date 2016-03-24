@@ -751,6 +751,18 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('StdClass', $instance->dependency);
     }
 
+    /**
+     * @expectedException \Atreyu\ConfigException
+     * @expectedExceptionCode \Atreyu\Injector::E_ALIASED_CANNOT_SHARE
+     */
+    public function testShareAfterAliasException()
+    {
+        $injector = new Injector();
+        $testClass = new \StdClass();
+        $injector->alias('StdClass', 'Atreyu\Test\SomeOtherClass');
+        $injector->share($testClass);
+    }
+
     public function testShareAfterAliasAliasedClassAllowed()
     {
         $injector = new Injector();
@@ -781,6 +793,18 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $obj2 = $injector->make('Atreyu\Test\DepInterface');
         $this->assertInstanceOf('Atreyu\Test\DepImplementation', $obj);
         $this->assertEquals($obj, $obj2);
+    }
+
+    /**
+     * @expectedException \Atreyu\ConfigException
+     * @expectedExceptionCode \Atreyu\Injector::E_SHARED_CANNOT_ALIAS
+     */
+    public function testAliasAfterShareException()
+    {
+        $injector = new Injector();
+        $testClass = new \StdClass();
+        $injector->share($testClass);
+        $injector->alias('StdClass', 'Atreyu\Test\SomeOtherClass');
     }
 
     /**
