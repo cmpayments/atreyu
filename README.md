@@ -1,5 +1,11 @@
 # Atreyu [![Build Status](https://travis-ci.org/cmpayments/atreyu.svg?branch=master)](https://travis-ci.org/cmpayments/atreyu)
 
+![License](https://img.shields.io/packagist/l/cmpayments/atreyu.svg)
+[![Latest Stable Version](https://img.shields.io/packagist/v/cmpayments/atreyu.svg)](https://packagist.org/packages/cmpayments/atreyu)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cmpayments/atreyu/badges/quality-score.png)](https://scrutinizer-ci.com/g/cmpayments/atreyu/)
+[![Total Downloads](https://img.shields.io/packagist/dt/cmpayments/atreyu.svg)](https://packagist.org/packages/cmpayments/atreyu)
+[![Reference Status](https://www.versioneye.com/php/cmpayments:atreyu/reference_badge.svg)](https://www.versioneye.com/php/cmpayments:atreyu/references)
+
 Atreyu is an extension of [Auryn](https://github.com/rdlowrey/auryn) and is born out of the need to use typehinted parameters when 
 instantiating classes, if no typehinting is available the use of docblock to identify parameters 
 is also possible (as a fallback only).
