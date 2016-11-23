@@ -94,7 +94,7 @@ class CachingReflector implements Reflector
         if ($reflectionClass = $param->getClass()) {
             $typeHint = $reflectionClass->getName();
             $classCacheKey = self::CACHE_KEY_CLASSES . strtolower($typeHint);
-            $this->cache->store($classCacheKey, $reflectionClass);
+            $this->cache->store($classCacheKey, $this->getClass($param->getClass()->getName()));
         } else {
             $typeHint = null;
         }
@@ -135,10 +135,9 @@ class CachingReflector implements Reflector
         return $reflectedMethod;
     }
 
-    public function getDocBlock(\ReflectionMethod $method)
+    public function getDocBlock(\ReflectionFunctionAbstract $method)
     {
         $cacheKey = self::CACHE_KEY_DOC_BLOCK . strtolower($method->class);
-
         if (!$docBlock = $this->cache->fetch($cacheKey)) {
 
             $class = $this->getClass($method->class);

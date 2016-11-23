@@ -47,7 +47,7 @@ class StandardReflector implements Reflector
         return new \ReflectionMethod($className, $methodName);
     }
 
-    public function getDocBlock($method)
+    public function getDocBlock(\ReflectionFunctionAbstract $method)
     {
         $class = $this->getClass($method->class);
 
