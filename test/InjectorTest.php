@@ -3,6 +3,7 @@
 namespace Atreyu\test;
 
 use Atreyu\Injector;
+use Atreyu\InjectorException;
 
 class InjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -78,7 +79,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Atreyu\InjectorException
+     * @expectedException \Atreyu\InjectorException
      */
     public function testMakeInstanceThrowsExceptionOnClassLoadFailure()
     {
@@ -103,24 +104,184 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Second argument', $injected->arg2);
     }
 
-    public function testMakeInstanceBasedOnTypeHintingWithCustomDefinitionOrder()
+    public function testMakeInstanceBasedOnTypeHintingWithArgumentDefinition()
     {
         $injector = new Injector;
-        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded', [new TestDependency2()]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded', [new TestDependency3()]);
 
-        $this->assertEquals(get_class($injected->testDep), 'Atreyu\Test\TestDependency');
-        $this->assertEquals(get_class($injected->testDep2), 'Atreyu\Test\TestDependency2');
-        $this->assertTrue(in_array('Atreyu\Test\DepInterface', class_implements($injected->testDep2)));
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
 
-    public function testMakeInstanceBasedOnDocBlocksWithCustomDefinitionOrder()
+    public function testMakeInstanceBasedOnTypeHintingWithAliasDefinition()
     {
         $injector = new Injector;
-        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new TestDependency2()]);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded');
 
-        $this->assertEquals(get_class($injected->testDep), 'Atreyu\Test\TestDependency');
-        $this->assertEquals(get_class($injected->testDep2), 'Atreyu\Test\TestDependency2');
-        $this->assertTrue(in_array('Atreyu\Test\DepInterface', class_implements($injected->testDep2)));
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithArgumentDefinition()
+    {
+        /**
+         * the first argument of TestMultiDepsNeeded2::__construct() can be an instance of two classes
+         */
+
+        // first test, test is with class TestDependency
+        $injector = new Injector;
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency(), new TestDependency3()]);
+
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+
+        // second test, test is with class TestDependency4
+        $injector = new Injector;
+        // please note that the arguments are actually in reversed order
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency4(), new TestDependency3()]);
+
+        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal4');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithArgumentDefinitionInWrongOrder()
+    {
+        /**
+         * the first argument of TestMultiDepsNeeded2::__construct() can be an instance of two classes
+         */
+
+        // first test, test is with class TestDependency
+        $injector = new Injector;
+        // please note that the arguments are actually in reversed order
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency3(), new TestDependency()]);
+
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+
+        // second test, test is with class TestDependency4
+        $injector = new Injector;
+        // please note that the arguments are actually in reversed order
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency3(), new TestDependency4()]);
+
+        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal4');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinition()
+    {
+        /**
+         * the first argument of TestMultiDepsNeeded2::__construct() can be an instance of two classes
+         * But no argument of params are defined so it will fallback to the first Doc block param definition
+         */
+
+        // first test, test is with class TestDependency
+        $injector = new Injector;
+        $injector->alias(DepInterface::class, TestDependency3::class);
+        $injected = $injector->make(TestMultiDepsNeeded2::class);
+
+        // checking for class TestDependency::class and not TestDependency4::class because class TestDependency::class is the first Doc block param definition
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinitionAndDefinedParams()
+    {
+        /**
+         * the first argument of TestMultiDepsNeeded2::__construct() can be an instance of two classes
+         */
+
+        // first test, test is with class TestDependency
+        $injector = new Injector;
+
+        // distraction definings,
+        // please note that the value of key 'non-existent-2' is also valid in TestMultiDepsNeeded2::class context
+        // the key is also very important, just wanted to point that out :)
+        $injector->defineParam('non-existent', new \stdClass());
+        $injector->defineParam('non-existent-2', $injector->make(TestDependency4::class));
+
+        // make
+        $injector->alias(DepInterface::class, TestDependency3::class);
+        $injector->defineParam('val1', $injector->make(TestDependency::class));
+        $injected = $injector->make(TestMultiDepsNeeded2::class);
+
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+
+        // second test, test is with class TestDependency2
+        $injector = new Injector;
+
+        // distraction definings
+        // please note that the value of key 'non-existent-2' is also valid in TestMultiDepsNeeded2::class context
+        // the key is also very important, just wanted to point that out :)
+        $injector->defineParam('non-existent', new \stdClass());
+        $injector->defineParam('non-existent-2', $injector->make(TestDependency::class));
+
+        // make
+        $injector->alias(DepInterface::class, TestDependency3::class);
+        $injector->defineParam('val1', $injector->make(TestDependency4::class));
+        $injected = $injector->make(TestMultiDepsNeeded2::class);
+
+        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal4');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinitionAndArgumentDefinitions()
+    {
+        /**
+         * the first argument of TestMultiDepsNeeded2::__construct() can be an instance of two classes
+         */
+
+        // first test, test is with class TestDependency
+        $injector = new Injector;
+        $injector->alias(DepInterface::class, TestDependency3::class);
+        // please note the first item of $arguments has no meaning and is for test purposes only
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new \stdClass(), $injector->make(TestDependency::class)]);
+
+        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+
+        // second test, test is with class TestDependency4
+        $injector = new Injector;
+        $injector->alias(DepInterface::class, TestDependency3::class);
+        // please note the first item of $arguments has no meaning and is for test purposes only
+        $injected = $injector->make(TestMultiDepsNeeded2::class, [new \stdClass(), $injector->make(TestDependency4::class)]);
+
+        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
+        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
+        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertEquals($injected->testDep->testProp, 'testVal4');
+        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
 
     public function testMakeInstanceStoresShareIfMarkedWithNullInstance()
@@ -167,7 +328,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @TODO
-     * @expectedException Atreyu\InjectorException
+     * @expectedException \Atreyu\InjectorException
      */
     public function testMakeInstanceThrowsExceptionOnUninstantiableTypehintWithoutDefinition()
     {
@@ -272,7 +433,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Atreyu\ConfigException
+     * @expectedException \Atreyu\ConfigException
      */
     public function testMakeInstanceThrowsExceptionIfStringDelegateClassHasNoInvokeMethod()
     {
@@ -281,7 +442,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Atreyu\ConfigException
+     * @expectedException \Atreyu\ConfigException
      */
     public function testMakeInstanceThrowsExceptionIfStringDelegateClassInstantiationFails()
     {
@@ -349,7 +510,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideInvalidDelegates
-     * @expectedException Atreyu\ConfigException
+     * @expectedException \Atreyu\ConfigException
      */
     public function testDelegateThrowsExceptionIfDelegateIsNotCallableOrString($badDelegate)
     {
@@ -377,9 +538,9 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         try {
             $injector->delegate('Atreyu\Test\DelegatableInterface', 'FunctionWhichDoesNotExist');
             $this->fail("Delegation was supposed to fail.");
-        } catch (\Atreyu\InjectorException $ie) {
+        } catch (InjectorException $ie) {
             $this->assertContains('FunctionWhichDoesNotExist', $ie->getMessage());
-            $this->assertEquals(\Atreyu\Injector::E_DELEGATE_ARGUMENT, $ie->getCode());
+            $this->assertEquals(Injector::E_DELEGATE_ARGUMENT, $ie->getCode());
         }
     }
 
@@ -389,10 +550,10 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         try {
             $injector->delegate('Atreyu\Test\DelegatableInterface', ['stdClass', 'methodWhichDoesNotExist']);
             $this->fail("Delegation was supposed to fail.");
-        } catch (\Atreyu\InjectorException $ie) {
+        } catch (InjectorException $ie) {
             $this->assertContains('stdClass', $ie->getMessage());
             $this->assertContains('methodWhichDoesNotExist', $ie->getMessage());
-            $this->assertEquals(\Atreyu\Injector::E_DELEGATE_ARGUMENT, $ie->getCode());
+            $this->assertEquals(Injector::E_DELEGATE_ARGUMENT, $ie->getCode());
         }
     }
 
@@ -561,7 +722,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
     public function testStaticStringInvokableWithArgument()
     {
-        $injector = new \Atreyu\Injector;
+        $injector = new Injector;
         $invokable = $injector->buildExecutable('Atreyu\Test\ClassWithStaticMethodThatTakesArg::doSomething');
         $this->assertEquals(42, $invokable(41));
     }
@@ -575,7 +736,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Atreyu\InjectorException
+     * @expectedException \Atreyu\InjectorException
      */
     public function testMissingAlias()
     {
@@ -833,7 +994,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             'Atreyu\InjectionException',
             'nonExistentFunction',
-            \Atreyu\Injector::E_INVOKABLE
+            Injector::E_INVOKABLE
         );
         $injector->buildExecutable('nonExistentFunction');
     }
@@ -845,18 +1006,18 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             'Atreyu\InjectionException',
             "[object(stdClass), 'nonExistentMethod']",
-            \Atreyu\Injector::E_INVOKABLE
+            Injector::E_INVOKABLE
         );
         $injector->buildExecutable([$object, 'nonExistentMethod']);
     }
-    
+
     public function testMakeExecutableFailsOnNonExistentStaticMethod()
     {
         $injector = new Injector();
         $this->setExpectedException(
             'Atreyu\InjectionException',
             "StdClass::nonExistentMethod",
-            \Atreyu\Injector::E_INVOKABLE
+            Injector::E_INVOKABLE
         );
         $injector->buildExecutable(['StdClass', 'nonExistentMethod']);
     }
@@ -931,8 +1092,6 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(42, $obj->testProp);
     }
-
-
 
     /**
      * Test that custom definitions are not passed through to dependencies.
@@ -1099,7 +1258,6 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         try {
             $injector->define('Atreyu\Test\ParentWithConstructor', [':foo' => 'parent']);
             $injector->define('Atreyu\Test\ChildWithoutConstructor', [':foo' => 'child']);
-            
             $injector->share('Atreyu\Test\ParentWithConstructor');
             $injector->share('Atreyu\Test\ChildWithoutConstructor');
 

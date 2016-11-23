@@ -29,7 +29,9 @@ interface Reflector
     public function getCtorParams($class);
 
     /**
-     * Retrieves the class type-hint from a given ReflectionParameter
+     * Retrieves the class type-hint from a given ReflectionParameter or doc block
+     *
+     * ReflectionParameter:
      *
      * There is no way to directly access a parameter's type-hint without
      * instantiating a new ReflectionClass instance and calling its getName()
@@ -37,10 +39,23 @@ interface Reflector
      * the same parameter type-hint or ReflectionClass is needed again we
      * already have it cached.
      *
+     * Doc block:
+     *
+     * There might be more than one class type-hinted definition in the doc block
+     * If there is more than one type-hinted definition in the doc block and there are arguments given (optional)
+     * then the doc block type-hinted definitions will each be matched against the given arguments.
+     * If no argument match is found, the first type-hinted definition will be used instead.
+     *
+     * If there is more than one type-hinted definition in the doc block and no arguments are given
+     * then the first doc block type-hinted definition will be used.
+     *
      * @param \ReflectionFunctionAbstract $function
-     * @param \ReflectionParameter $param
+     * @param \ReflectionParameter        $param
+     * @param array                       $arguments
+     *
+     * @return
      */
-    public function getParamTypeHint(\ReflectionFunctionAbstract $function, \ReflectionParameter $param);
+    public function getParamTypeHint(\ReflectionFunctionAbstract $function, \ReflectionParameter $param, array $arguments = []);
 
     /**
      * Retrieves and caches a reflection for the specified function

@@ -70,7 +70,7 @@ class CachingReflector implements Reflector
         return $reflectedCtorParams;
     }
 
-    public function getParamTypeHint(\ReflectionFunctionAbstract $function, \ReflectionParameter $param)
+    public function getParamTypeHint(\ReflectionFunctionAbstract $function, \ReflectionParameter $param, array $arguments = [])
     {
         $lowParam = strtolower($param->name);
 
@@ -95,6 +95,49 @@ class CachingReflector implements Reflector
             $typeHint = $reflectionClass->getName();
             $classCacheKey = self::CACHE_KEY_CLASSES . strtolower($typeHint);
             $this->cache->store($classCacheKey, $this->getClass($param->getClass()->getName()));
+        } elseif (($docBlockParams = $this->getDocBlock($function)->getTagsByName('param')) && !empty($docBlockParams)) {
+
+            $typeHint = false;
+
+            /** @var DocBlock\Tag\ParamTag $docBlockParam */
+            foreach ($docBlockParams as $docBlockParam) {
+
+                if (($param->getName() === ltrim($docBlockParam->getVariableName(), '$'))
+                    && (!empty($docBlockParam->getType()))
+                ) {
+                    $definitions = explode('|', $docBlockParam->getType());
+
+                    foreach ($arguments as $key => $argument) {
+
+                        foreach ($definitions as $definition) {
+
+                            if (is_object($argument)
+                                && in_array(ltrim($definition, '\\'), $this->getImplemented(get_class($argument)))
+                                && (is_numeric($key) || (ltrim($docBlockParam->getVariableName(), '$') === $key)
+                            )) {
+                                $typeHint = $definition;
+
+                                // no need to loop again, since we found a match already!
+                                continue 3;
+                            }
+                        }
+                    }
+
+                    if ($typeHint === false) {
+
+                        // use first definition, there is no way to know which instance of the hinted doc block definitions is actually required
+                        // because there were either no arguments given or no argument match was found
+                        list($typeHint, ) = $definitions;
+                    }
+                }
+            }
+
+            // store the ExtendedReflectionClass in the cache
+            if ($typeHint !== false) {
+
+                $classCacheKey = self::CACHE_KEY_CLASSES . strtolower($typeHint);
+                $this->cache->store($classCacheKey, $this->getClass($typeHint));
+            }
         } else {
             $typeHint = null;
         }

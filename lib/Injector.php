@@ -451,62 +451,18 @@ class Injector
             foreach ($definitions as $j => $definition) {
 
                 // use Reflection to inspect to needed parameters
-                if ($reflParam->getClass()) {
+                if (is_object($definition)
+                    && in_array(
+                        ltrim($this->reflector->getParamTypeHint($reflFunc, $reflParam, array_merge($definitions, $this->paramDefinitions)), '\\'),
+                        $this->reflector->getImplemented(get_class($definition))
+                )) {
+                    $args[$i] = $definition;
 
-                    if (is_object($definition) && in_array($reflParam->getClass()->getName(), $this->reflector->getImplemented(get_class($definition)))) {
+                    // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
+                    unset($reflParams[$i], $definitions[$j]);
 
-                        $args[$i] = $definition;
-
-                        // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
-                        unset($reflParams[$i], $definitions[$j]);
-
-                        // no need to loop again, since we found a match already!
-                        continue 2;
-                    }
-
-                    // skip the checking-for-doc-comment part because the parameter was type-hinted
-                    continue;
-                }
-
-                $docBlockParams = $this->reflector->getDocBlock($reflFunc)->getTagsByName('param');
-
-                // use Doc Comment to inspect to needed parameters
-                if (isset($docBlockParams[$i])) {
-                    $type = $docBlockParams[$i]->getType();
-
-                    if (!empty($type) && !in_array(strtolower($type), ['array', 'null'])) {
-
-                        if (is_object($definition)) {
-
-                            $class = get_class($definition);
-
-                            foreach (explode('|', $type) as $t) {
-
-                                // sub string type because the DocBlock always prepends a string, we don't want that
-                                if (in_array(substr($t, 1), $this->reflector->getImplemented($class))) {
-
-                                    $args[$i] = $definition;
-
-                                    // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
-                                    unset($reflParams[$i], $definitions[$j]);
-
-                                    // no need to loop again, since we found a match already!
-                                    continue 3;
-                                }
-                            }
-                        }
-
-                        // if parameter is not type hinted
-                        if (is_null($reflParam->getClass())) {
-
-                            $args[$i] = $this->make($type);
-
-                            unset($reflParams[$i]);
-
-                            // no need to loop again, since we found a match already!
-                            continue 2;
-                        }
-                    }
+                    // no need to loop again, since we found a match already!
+                    continue 2;
                 }
             }
         }
@@ -577,7 +533,7 @@ class Injector
 
     private function buildArgFromTypeHint(\ReflectionFunctionAbstract $reflFunc, \ReflectionParameter $reflParam)
     {
-        $typeHint = $this->reflector->getParamTypeHint($reflFunc, $reflParam);
+        $typeHint = $this->reflector->getParamTypeHint($reflFunc, $reflParam, $this->paramDefinitions);
 
         if (!$typeHint) {
             $obj = null;

@@ -150,10 +150,21 @@ class TestDependency
     public $testProp = 'testVal';
 }
 
-class TestDependency2 extends TestDependency implements DepInterface
+class TestDependency2 extends TestDependency
 {
     public $testProp = 'testVal2';
 }
+
+class TestDependency3 implements DepInterface
+{
+    public $testProp = 'testVal3';
+}
+
+class TestDependency4
+{
+    public $testProp = 'testVal4';
+}
+
 
 class SpecdTestDependency extends TestDependency
 {
@@ -190,19 +201,19 @@ class TestMultiDepsNeeded2
     /**
      * TestMultiDepsNeeded2 constructor.
      *
-     * @param TestDependency $val1
+     * @param TestDependency|TestDependency4 $val1
      * @param DepInterface   $val2
      *
      * @throws \Exception
      */
     public function __construct($val1, $val2)
     {
-        if (!($val1 instanceof TestDependency)) {
-            throw new \Exception('param $val1 does not meet required input');
+        if (!($val1 instanceof TestDependency) && !($val1 instanceof TestDependency4)) {
+            throw new \Exception('param $val1 does not meet required input; ' . get_class($val1));
         }
 
-        if (!($val2 instanceof TestDependency2)) {
-            throw new \Exception('param $val2 does not meet required input');
+        if (!($val2 instanceof TestDependency3)) {
+            throw new \Exception('param $val2 does not meet required input; ' . get_class($val2));
         }
 
         $this->testDep  = $val1;
