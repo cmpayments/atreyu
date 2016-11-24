@@ -11,7 +11,7 @@ abstract class BaseReflector
      * @param \ReflectionParameter $param
      * @param array                $arguments
      *
-     * @return bool
+     * @return bool|string
      */
     public function getParamDocBlockHint(array $docBlockParams, \ReflectionParameter $param, array $arguments = [])
     {

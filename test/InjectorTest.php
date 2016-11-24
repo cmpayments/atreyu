@@ -385,7 +385,10 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     {
         $injector= new Injector;
 
-        $callable = $this->createMock('CallableMock');
+        $callable = $this->getMock(
+            'CallableMock',
+            ['__invoke']
+        );
 
         $injector->delegate('TestDependency', $callable);
 
@@ -406,7 +409,10 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     {
         $injector= new Injector;
 
-        $callable = $this->createMock('Atreyu\Test\CallableMock');
+        $callable = $this->getMock(
+            'CallableMock',
+            ['__invoke']
+        );
 
         $callable->expects($this->once())
             ->method('__invoke')
