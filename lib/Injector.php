@@ -48,6 +48,14 @@ class Injector
     private $delegates = [];
     private $inProgressMakes = [];
 
+    /**
+     * @return Reflector
+     */
+    public function getReflector()
+    {
+        return $this->reflector;
+    }
+
     public function __construct(Reflector $reflector = null)
     {
         $this->reflector = $reflector ?: new CachingReflector;

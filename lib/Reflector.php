@@ -8,7 +8,7 @@ interface Reflector
      * Retrieves ReflectionClass instances, caching them for future retrieval
      *
      * @param string $class
-     * @return \ReflectionClass
+     * @return ExtendedReflectionClass
      */
     public function getClass($class);
 
