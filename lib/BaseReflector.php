@@ -52,7 +52,12 @@ abstract class BaseReflector
 
                     // use first definition, there is no way to know which instance of the hinted doc block definitions is actually required
                     // because there were either no arguments given or no argument match was found
-                    list($typeHint,) = $definitions;
+                    list($firstDefinition,) = $definitions;
+
+                    if (!in_array(strtolower($firstDefinition), ['int', 'float', 'bool', 'string', 'array'])) {
+
+                        $typeHint = $firstDefinition;
+                    }
                 }
             }
         }
