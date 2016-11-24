@@ -5,7 +5,7 @@ namespace Atreyu;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Context;
 
-class CachingReflector implements Reflector
+class CachingReflector extends BaseReflector implements Reflector
 {
     const CACHE_KEY_CLASSES = 'atreyu.refls.classes.';
     const CACHE_KEY_CTORS = 'atreyu.refls.ctors.';
@@ -26,7 +26,7 @@ class CachingReflector implements Reflector
 
     public function getClass($class)
     {
-        $cacheKey = self::CACHE_KEY_CLASSES . strtolower($class);
+        $cacheKey = self::CACHE_KEY_CLASSES.strtolower($class);
 
         if (!$reflectionClass = $this->cache->fetch($cacheKey)) {
             $reflectionClass = new ExtendedReflectionClass($class);
@@ -38,7 +38,7 @@ class CachingReflector implements Reflector
 
     public function getCtor($class)
     {
-        $cacheKey = self::CACHE_KEY_CTORS . strtolower($class);
+        $cacheKey = self::CACHE_KEY_CTORS.strtolower($class);
 
         $reflectedCtor = $this->cache->fetch($cacheKey);
 
@@ -53,7 +53,7 @@ class CachingReflector implements Reflector
 
     public function getCtorParams($class)
     {
-        $cacheKey = self::CACHE_KEY_CTOR_PARAMS . strtolower($class);
+        $cacheKey = self::CACHE_KEY_CTOR_PARAMS.strtolower($class);
 
         $reflectedCtorParams = $this->cache->fetch($cacheKey);
 
@@ -77,11 +77,11 @@ class CachingReflector implements Reflector
         if ($function instanceof \ReflectionMethod) {
             $lowClass = strtolower($function->class);
             $lowMethod = strtolower($function->name);
-            $paramCacheKey = self::CACHE_KEY_CLASSES . "{$lowClass}.{$lowMethod}.param-{$lowParam}";
+            $paramCacheKey = self::CACHE_KEY_CLASSES."{$lowClass}.{$lowMethod}.param-{$lowParam}";
         } else {
             $lowFunc = strtolower($function->name);
             $paramCacheKey = ($lowFunc !== '{closure}')
-                ? self::CACHE_KEY_FUNCS . ".{$lowFunc}.param-{$lowParam}"
+                ? self::CACHE_KEY_FUNCS.".{$lowFunc}.param-{$lowParam}"
                 : null;
         }
 
@@ -93,49 +93,18 @@ class CachingReflector implements Reflector
 
         if ($reflectionClass = $param->getClass()) {
             $typeHint = $reflectionClass->getName();
-            $classCacheKey = self::CACHE_KEY_CLASSES . strtolower($typeHint);
+            $classCacheKey = self::CACHE_KEY_CLASSES.strtolower($typeHint);
             $this->cache->store($classCacheKey, $this->getClass($param->getClass()->getName()));
-        } elseif (($docBlockParams = $this->getDocBlock($function)->getTagsByName('param')) && !empty($docBlockParams)) {
-
-            $typeHint = false;
-
-            /** @var DocBlock\Tag\ParamTag $docBlockParam */
-            foreach ($docBlockParams as $docBlockParam) {
-
-                if (($param->getName() === ltrim($docBlockParam->getVariableName(), '$'))
-                    && (!empty($docBlockParam->getType()))
-                ) {
-                    $definitions = explode('|', $docBlockParam->getType());
-
-                    foreach ($arguments as $key => $argument) {
-
-                        foreach ($definitions as $definition) {
-
-                            if (is_object($argument)
-                                && in_array(ltrim($definition, '\\'), $this->getImplemented(get_class($argument)))
-                                && (is_numeric($key) || (ltrim($docBlockParam->getVariableName(), '$') === $key)
-                            )) {
-                                $typeHint = $definition;
-
-                                // no need to loop again, since we found a match already!
-                                continue 3;
-                            }
-                        }
-                    }
-
-                    if ($typeHint === false) {
-
-                        // use first definition, there is no way to know which instance of the hinted doc block definitions is actually required
-                        // because there were either no arguments given or no argument match was found
-                        list($typeHint, ) = $definitions;
-                    }
-                }
-            }
+        } elseif (($function instanceof \ReflectionMethod)
+            && ($docBlockParams = $this->getDocBlock($function)->getTagsByName('param'))
+            && !empty($docBlockParams)
+        ) {
+            $typeHint = $this->getParamDocBlockHint($docBlockParams, $param, $arguments);
 
             // store the ExtendedReflectionClass in the cache
             if ($typeHint !== false) {
 
-                $classCacheKey = self::CACHE_KEY_CLASSES . strtolower($typeHint);
+                $classCacheKey = self::CACHE_KEY_CLASSES.strtolower($typeHint);
                 $this->cache->store($classCacheKey, $this->getClass($typeHint));
             }
         } else {
@@ -150,7 +119,7 @@ class CachingReflector implements Reflector
     public function getFunction($functionName)
     {
         $lowFunc = strtolower($functionName);
-        $cacheKey = self::CACHE_KEY_FUNCS . $lowFunc;
+        $cacheKey = self::CACHE_KEY_FUNCS.$lowFunc;
 
         $reflectedFunc = $this->cache->fetch($cacheKey);
 
@@ -168,7 +137,7 @@ class CachingReflector implements Reflector
             ? $classNameOrInstance
             : get_class($classNameOrInstance);
 
-        $cacheKey = self::CACHE_KEY_METHODS . strtolower($className) . '.' . strtolower($methodName);
+        $cacheKey = self::CACHE_KEY_METHODS.strtolower($className).'.'.strtolower($methodName);
 
         if (!$reflectedMethod = $this->cache->fetch($cacheKey)) {
             $reflectedMethod = new \ReflectionMethod($className, $methodName);
@@ -178,9 +147,9 @@ class CachingReflector implements Reflector
         return $reflectedMethod;
     }
 
-    public function getDocBlock(\ReflectionFunctionAbstract $method)
+    public function getDocBlock(\ReflectionMethod $method)
     {
-        $cacheKey = self::CACHE_KEY_DOC_BLOCK . strtolower($method->class);
+        $cacheKey = self::CACHE_KEY_DOC_BLOCK.strtolower($method->class);
         if (!$docBlock = $this->cache->fetch($cacheKey)) {
 
             $class = $this->getClass($method->class);
@@ -199,12 +168,17 @@ class CachingReflector implements Reflector
         return $docBlock;
     }
 
+    /**
+     * @param $className
+     *
+     * @return array|bool
+     */
     public function getImplemented($className)
     {
-        $cacheKey = self::CACHE_KEY_IMPLEMENTED . strtolower($className);
+        $cacheKey = self::CACHE_KEY_IMPLEMENTED.strtolower($className);
 
         if (!$implemented = $this->cache->fetch($cacheKey)) {
-            $implemented = array_merge([$className], class_implements($className));
+            $implemented = parent::getImplemented($className);
             $this->cache->store($cacheKey, $implemented);
         }
 

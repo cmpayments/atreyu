@@ -5,7 +5,7 @@ namespace Atreyu;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Context;
 
-class StandardReflector implements Reflector
+class StandardReflector extends BaseReflector implements Reflector
 {
     public function getClass($class)
     {
@@ -30,42 +30,11 @@ class StandardReflector implements Reflector
     {
         if ($reflectionClass = $param->getClass()) {
             $typeHint = $reflectionClass->getName();
-        } elseif (($docBlockParams = $this->getDocBlock($function)->getTagsByName('param')) && !empty($docBlockParams)) {
-
-            $typeHint = false;
-
-            /** @var DocBlock\Tag\ParamTag $docBlockParam */
-            foreach ($docBlockParams as $docBlockParam) {
-
-                if (($param->getName() === ltrim($docBlockParam->getVariableName(), '$'))
-                    && (!empty($docBlockParam->getType()))
-                ) {
-                    $definitions = explode('|', $docBlockParam->getType());
-
-                    foreach ($arguments as $key => $argument) {
-
-                        foreach ($definitions as $definition) {
-
-                            if (is_object($argument)
-                                && in_array(ltrim($definition, '\\'), $this->getImplemented(get_class($argument)))
-                                && (is_numeric($key) || (ltrim($docBlockParam->getVariableName(), '$') === $key)
-                                )) {
-                                $typeHint = $definition;
-
-                                // no need to loop again, since we found a match already!
-                                continue 3;
-                            }
-                        }
-                    }
-
-                    if ($typeHint === false) {
-
-                        // use first definition, there is no way to know which instance of the hinted doc block definitions is actually required
-                        // because there were either no arguments given or no argument match was found
-                        list($typeHint, ) = $definitions;
-                    }
-                }
-            }
+        } elseif (($function instanceof \ReflectionMethod)
+            && ($docBlockParams = $this->getDocBlock($function)->getTagsByName('param'))
+            && !empty($docBlockParams)
+        ) {
+            $typeHint = $this->getParamDocBlockHint($docBlockParams, $param, $arguments);
         } else {
             $typeHint = null;
         }
@@ -87,7 +56,7 @@ class StandardReflector implements Reflector
         return new \ReflectionMethod($className, $methodName);
     }
 
-    public function getDocBlock(\ReflectionFunctionAbstract $method)
+    public function getDocBlock(\ReflectionMethod $method)
     {
         $class = $this->getClass($method->class);
 
@@ -98,10 +67,5 @@ class StandardReflector implements Reflector
                 $class->getUseStatements()
             )
         );
-    }
-
-    public function getImplemented($className)
-    {
-        return array_merge([$className], class_implements($className));
     }
 }

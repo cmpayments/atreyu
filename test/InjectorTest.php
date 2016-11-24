@@ -109,9 +109,9 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector = new Injector;
         $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded', [new TestDependency3()]);
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -122,9 +122,9 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
         $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded');
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -137,22 +137,22 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
         // first test, test is with class TestDependency
         $injector = new Injector;
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency(), new TestDependency3()]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new TestDependency(), new TestDependency3()]);
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
         // please note that the arguments are actually in reversed order
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency4(), new TestDependency3()]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new TestDependency4(), new TestDependency3()]);
 
-        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal4');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -166,22 +166,22 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         // first test, test is with class TestDependency
         $injector = new Injector;
         // please note that the arguments are actually in reversed order
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency3(), new TestDependency()]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new TestDependency3(), new TestDependency()]);
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
         // please note that the arguments are actually in reversed order
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new TestDependency3(), new TestDependency4()]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new TestDependency3(), new TestDependency4()]);
 
-        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal4');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -195,13 +195,13 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
         // first test, test is with class TestDependency
         $injector = new Injector;
-        $injector->alias(DepInterface::class, TestDependency3::class);
-        $injected = $injector->make(TestMultiDepsNeeded2::class);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2');
 
         // checking for class TestDependency::class and not TestDependency4::class because class TestDependency::class is the first Doc block param definition
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -219,16 +219,16 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         // please note that the value of key 'non-existent-2' is also valid in TestMultiDepsNeeded2::class context
         // the key is also very important, just wanted to point that out :)
         $injector->defineParam('non-existent', new \stdClass());
-        $injector->defineParam('non-existent-2', $injector->make(TestDependency4::class));
+        $injector->defineParam('non-existent-2', $injector->make('Atreyu\Test\TestDependency4'));
 
         // make
-        $injector->alias(DepInterface::class, TestDependency3::class);
-        $injector->defineParam('val1', $injector->make(TestDependency::class));
-        $injected = $injector->make(TestMultiDepsNeeded2::class);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injector->defineParam('val1', $injector->make('Atreyu\Test\TestDependency'));
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2');
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
 
@@ -239,16 +239,16 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         // please note that the value of key 'non-existent-2' is also valid in TestMultiDepsNeeded2::class context
         // the key is also very important, just wanted to point that out :)
         $injector->defineParam('non-existent', new \stdClass());
-        $injector->defineParam('non-existent-2', $injector->make(TestDependency::class));
+        $injector->defineParam('non-existent-2', $injector->make('Atreyu\Test\TestDependency'));
 
         // make
-        $injector->alias(DepInterface::class, TestDependency3::class);
-        $injector->defineParam('val1', $injector->make(TestDependency4::class));
-        $injected = $injector->make(TestMultiDepsNeeded2::class);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injector->defineParam('val1', $injector->make('Atreyu\Test\TestDependency4'));
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2');
 
-        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal4');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -261,25 +261,25 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
 
         // first test, test is with class TestDependency
         $injector = new Injector;
-        $injector->alias(DepInterface::class, TestDependency3::class);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
         // please note the first item of $arguments has no meaning and is for test purposes only
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new \stdClass(), $injector->make(TestDependency::class)]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new \stdClass(), $injector->make('Atreyu\Test\TestDependency')]);
 
-        $this->assertInstanceOf(TestDependency::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
-        $injector->alias(DepInterface::class, TestDependency3::class);
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
         // please note the first item of $arguments has no meaning and is for test purposes only
-        $injected = $injector->make(TestMultiDepsNeeded2::class, [new \stdClass(), $injector->make(TestDependency4::class)]);
+        $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new \stdClass(), $injector->make('Atreyu\Test\TestDependency4')]);
 
-        $this->assertInstanceOf(TestDependency4::class, $injected->testDep);
-        $this->assertInstanceOf(TestDependency3::class, $injected->testDep2);
-        $this->assertInstanceOf(DepInterface::class, $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
+        $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
         $this->assertEquals($injected->testDep->testProp, 'testVal4');
         $this->assertEquals($injected->testDep2->testProp, 'testVal3');
     }
@@ -385,10 +385,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     {
         $injector= new Injector;
 
-        $callable = $this->getMock(
-            'CallableMock',
-            ['__invoke']
-        );
+        $callable = $this->createMock('CallableMock');
 
         $injector->delegate('TestDependency', $callable);
 
@@ -409,10 +406,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     {
         $injector= new Injector;
 
-        $callable = $this->getMock(
-            'CallableMock',
-            ['__invoke']
-        );
+        $callable = $this->createMock('Atreyu\Test\CallableMock');
+
         $callable->expects($this->once())
             ->method('__invoke')
             ->will($this->returnValue(new TestDependency()));

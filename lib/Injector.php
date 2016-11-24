@@ -171,6 +171,9 @@ class Injector
         return $this;
     }
 
+    /**
+     * @param $nameOrInstance
+     */
     private function shareClass($nameOrInstance)
     {
         list(, $normalizedName) = $this->resolveAlias($nameOrInstance);
@@ -319,6 +322,12 @@ class Injector
         return $result;
     }
 
+    /**
+     * @param $source
+     * @param $name
+     *
+     * @return array
+     */
     private function filter($source, $name)
     {
         if (empty($name)) {
@@ -384,6 +393,14 @@ class Injector
         return $obj;
     }
 
+    /**
+     * @param       $className
+     * @param       $normalizedClass
+     * @param array $definition
+     *
+     * @return object
+     * @throws InjectionException
+     */
     private function provisionInstance($className, $normalizedClass, array $definition)
     {
         try {
@@ -477,13 +494,13 @@ class Injector
             } elseif (isset($definitions[$name]) || array_key_exists($name, $definitions)) {
                 // interpret the param as a class name to be instantiated
                 $arg = $this->make($definitions[$name]);
-            } elseif (($prefix = self::A_RAW . $name) && (isset($definitions[$prefix]) || array_key_exists($prefix, $definitions))) {
+            } elseif (($prefix = self::A_RAW.$name) && (isset($definitions[$prefix]) || array_key_exists($prefix, $definitions))) {
                 // interpret the param as a raw value to be injected
                 $arg = $definitions[$prefix];
-            } elseif (($prefix = self::A_DELEGATE . $name) && isset($definitions[$prefix])) {
+            } elseif (($prefix = self::A_DELEGATE.$name) && isset($definitions[$prefix])) {
                 // interpret the param as an invokable delegate
                 $arg = $this->buildArgFromDelegate($name, $definitions[$prefix]);
-            } elseif (($prefix = self::A_DEFINE . $name) && isset($definitions[$prefix])) {
+            } elseif (($prefix = self::A_DEFINE.$name) && isset($definitions[$prefix])) {
                 // interpret the param as a class definition
                 $arg = $this->buildArgFromParamDefineArr($definitions[$prefix]);
             } elseif (!$arg = $this->buildArgFromTypeHint($reflFunc, $reflParam)) {
@@ -568,9 +585,9 @@ class Injector
         } else {
             $reflFunc = $reflParam->getDeclaringFunction();
             $classWord = ($reflFunc instanceof \ReflectionMethod)
-                ? $reflFunc->getDeclaringClass()->name . '::'
+                ? $reflFunc->getDeclaringClass()->name.'::'
                 : '';
-            $funcWord = $classWord . $reflFunc->name;
+            $funcWord = $classWord.$reflFunc->name;
 
             throw new InjectionException(
                 $this->inProgressMakes,
@@ -587,6 +604,13 @@ class Injector
         return $arg;
     }
 
+    /**
+     * @param $obj
+     * @param $normalizedClass
+     *
+     * @return mixed
+     * @throws InjectionException
+     */
     private function prepareInstance($obj, $normalizedClass)
     {
         if (isset($this->prepares[$normalizedClass])) {
@@ -693,6 +717,12 @@ class Injector
         return $executableStruct;
     }
 
+    /**
+     * @param $stringExecutable
+     *
+     * @return array
+     * @throws InjectionException
+     */
     private function buildExecutableStructFromString($stringExecutable)
     {
         if (function_exists($stringExecutable)) {

@@ -49,6 +49,10 @@ class Executable
 
     /**
      * @TODO Remove this extra indirection when 5.3 support is dropped
+     * @param $reflection
+     * @param $args
+     *
+     * @return mixed
      */
     private function invokeClosureCompat($reflection, $args)
     {
