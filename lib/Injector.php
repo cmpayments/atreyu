@@ -53,7 +53,7 @@ class Injector
         $this->reflector = $reflector ?: new CachingReflector;
 
         // alias and share the reflector instance
-        $this->alias(Reflector::class, get_class($this->reflector))->share($this->reflector);
+        $this->alias('Atreyu\Reflector', get_class($this->reflector))->share($this->reflector);
     }
 
     public function __clone()
