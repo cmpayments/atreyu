@@ -112,8 +112,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnTypeHintingWithAliasDefinition()
@@ -125,8 +125,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithArgumentDefinition()
@@ -142,8 +142,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
@@ -153,8 +153,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal4');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal4', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithArgumentDefinitionInWrongOrder()
@@ -171,8 +171,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
@@ -182,8 +182,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal4');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal4', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinition()
@@ -202,8 +202,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinitionAndDefinedParams()
@@ -229,8 +229,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
 
         // second test, test is with class TestDependency2
         $injector = new Injector;
@@ -249,8 +249,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal4');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal4', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithAliasDefinitionAndArgumentDefinitions()
@@ -268,8 +268,8 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
 
         // second test, test is with class TestDependency4
         $injector = new Injector;
@@ -280,8 +280,47 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
         $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep2);
         $this->assertInstanceOf('Atreyu\Test\DepInterface', $injected->testDep2);
-        $this->assertEquals($injected->testDep->testProp, 'testVal4');
-        $this->assertEquals($injected->testDep2->testProp, 'testVal3');
+        $this->assertEquals('testVal4', $injected->testDep->testProp);
+        $this->assertEquals('testVal3', $injected->testDep2->testProp);
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithInstanceAsSharedItem()
+    {
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', ['var1Value', 'var2Value']);
+
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share($injector->make('Atreyu\Test\TestDependency'));
+        $injector->share($injector->make('Atreyu\Test\TestDependency2'));
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', ['var1Value', 'var2Value']);
+
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', [':var1' => 'var1Value', 'var2Value']);
+
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', [':var1' => 'var1Value', ':var2' => 'var2Value']);
+
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
     }
 
     public function testMakeInstanceStoresShareIfMarkedWithNullInstance()

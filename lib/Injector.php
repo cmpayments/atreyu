@@ -455,6 +455,19 @@ class Injector
         return new $className;
     }
 
+    /**
+     * @param \ReflectionFunctionAbstract $reflFunc
+     * @param array                       $definitions
+     * @param array|null                  $reflParams
+     *
+     * @return array
+     * @throws ConfigException
+     * @throws InjectionException
+     *
+     * @known_issues:
+     * - when more than two (or more) function arguments are type hinted by the same class/interface hint
+     *   than the definition gets unset which means not all function argument will be provisioned.
+     */
     private function provisionFuncArgs(\ReflectionFunctionAbstract $reflFunc, array $definitions, array $reflParams = null)
     {
         $args = [];
@@ -467,23 +480,46 @@ class Injector
         foreach ($reflParams as $i => $reflParam) {
 
             $args[$i] = null;
+            $typeHint = ltrim($this->reflector->getParamTypeHint($reflFunc, $reflParam, array_merge($definitions, $this->paramDefinitions)), '\\');
 
             foreach ($definitions as $j => $definition) {
 
-                // use Reflection to inspect to needed parameters
-                if (is_object($definition)
-                    && in_array(
-                        ltrim($this->reflector->getParamTypeHint($reflFunc, $reflParam, array_merge($definitions, $this->paramDefinitions)), '\\'),
-                        $this->reflector->getImplemented(get_class($definition))
-                )) {
+                if (is_object($definition) && in_array($typeHint, $this->reflector->getImplemented(get_class($definition)))) {
+
                     $args[$i] = $definition;
 
                     // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
                     unset($reflParams[$i], $definitions[$j]);
 
-                    // no need to loop again, since we found a match already!
                     continue 2;
                 }
+            }
+
+            // check if the needed instance was shared before
+            $normalisedTypeHint = $this->normalizeName($typeHint);
+            if (!empty($typeHint) && array_key_exists($this->normalizeName($typeHint), $this->shares)) {
+
+                if (is_null($this->shares[$normalisedTypeHint])) {
+
+                    $this->share($this->make($typeHint));
+                }
+
+                $args[$i] = $this->shares[$normalisedTypeHint];
+
+                // because we magically got another definition
+                $definitions = array_values(
+                    array_merge(
+                        array_slice($definitions, 0, $i),
+                        [$i => $args[$i]],
+                        array_slice($definitions, $i)
+                    )
+                );
+
+                // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
+                unset($reflParams[$i]);
+
+                // no need to loop again, since we found a match already!
+                continue;
             }
         }
 

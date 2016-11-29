@@ -165,7 +165,6 @@ class TestDependency4
     public $testProp = 'testVal4';
 }
 
-
 class SpecdTestDependency extends TestDependency
 {
     public $testProp = 'testVal';
@@ -202,7 +201,7 @@ class TestMultiDepsNeeded2
      * TestMultiDepsNeeded2 constructor.
      *
      * @param TestDependency|TestDependency4 $val1
-     * @param DepInterface   $val2
+     * @param DepInterface                   $val2
      *
      * @throws \Exception
      */
@@ -218,6 +217,25 @@ class TestMultiDepsNeeded2
 
         $this->testDep  = $val1;
         $this->testDep2 = $val2;
+    }
+}
+
+class TestMakeInstanceFromSharedItem
+{
+    /**
+     * TestMakeInstanceFromSharedItem constructor.
+     *
+     * @param TestDependency  $testDependency
+     * @param string          $var1
+     * @param TestDependency2 $testDependency2
+     * @param string          $var2
+     */
+    public function __construct(TestDependency $testDependency, $var1 = 'UNKNOWN', TestDependency2 $testDependency2, $var2 = 'UNKNOWN')
+    {
+        $this->testDep  = $testDependency;
+        $this->var1     = $var1;
+        $this->testDep2 = $testDependency;
+        $this->var2     = $var2;
     }
 }
 
