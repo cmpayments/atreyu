@@ -2,6 +2,8 @@
 
 namespace Atreyu\Test;
 
+const TEST_OUTSIDE_CLASS = '123';
+
 class InaccessibleExecutableClassMethod
 {
     private function doSomethingPrivate()
@@ -236,6 +238,87 @@ class TestMakeInstanceFromSharedItem
         $this->var1     = $var1;
         $this->testDep2 = $testDependency;
         $this->var2     = $var2;
+    }
+}
+
+class TestMakeInstanceFromSharedItem2
+{
+    /**
+     * TestMakeInstanceFromSharedItem2 constructor.
+     *
+     * @param null            $var1
+     * @param string          $var2
+     * @param TestDependency  $testDependency
+     * @param TestDependency2 $testDependency2
+     */
+    public function __construct($var1 = null, $var2 = 'UNKNOWN', TestDependency $testDependency, TestDependency2 $testDependency2)
+    {
+        $this->testDep  = $testDependency;
+        $this->var1     = $var1;
+        $this->testDep2 = $testDependency;
+        $this->var2     = $var2;
+    }
+}
+
+class TestMakeInstanceFromAliasedItem
+{
+    /**
+     * TestMakeInstanceFromAliasedItem constructor.
+     *
+     * @param DepInterface $testDependency
+     * @param string       $var1
+     */
+    public function __construct(DepInterface $testDependency, $var1)
+    {
+        $this->testDep = $testDependency;
+        $this->var1 = $var1;
+    }
+}
+
+class TestMakeInstanceFromAliasedItem2
+{
+    /**
+     * TestMakeInstanceFromAliasedItem2 constructor.
+     *
+     * @param DepInterface $testDependency
+     * @param null         $var1
+     */
+    public function __construct(DepInterface $testDependency, $var1 = null)
+    {
+        $this->testDep = $testDependency;
+        $this->var1 = $var1;
+    }
+}
+
+class TestMakeInstanceFromAliasedItem3
+{
+    /**
+     * TestMakeInstanceFromAliasedItem3 constructor.
+     *
+     * @param DepInterface $testDependency
+     * @param string       $var1
+     */
+    public function __construct(DepInterface $testDependency, $var1 = 'UNKNOWN')
+    {
+        $this->testDep = $testDependency;
+        $this->var1 = $var1;
+    }
+}
+
+class TestMakeInstanceFromAliasedItem4
+{
+    const TEST_INSIDE_CLASS = '123';
+
+    /**
+     * TestMakeInstanceFromAliasedItem4 constructor.
+     *
+     * @param DepInterface $testDependency
+     * @param string       $var1
+     */
+    public function __construct(DepInterface $testDependency, $var1 = self::TEST_INSIDE_CLASS)
+    {
+        $this->testDep = $testDependency;
+        $this->var1 = $var1;
     }
 }
 

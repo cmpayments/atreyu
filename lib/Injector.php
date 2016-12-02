@@ -463,10 +463,6 @@ class Injector
      * @return array
      * @throws ConfigException
      * @throws InjectionException
-     *
-     * @known_issues:
-     * - when more than two (or more) function arguments are type hinted by the same class/interface hint
-     *   than the definition gets unset which means not all function argument will be provisioned.
      */
     private function provisionFuncArgs(\ReflectionFunctionAbstract $reflFunc, array $definitions, array $reflParams = null)
     {
@@ -479,60 +475,50 @@ class Injector
 
         foreach ($reflParams as $i => $reflParam) {
 
-            $args[$i] = null;
+            $key      = $this->isParamNameSuppliedInDefinitions($i, $reflParam, $definitions);
             $typeHint = ltrim($this->reflector->getParamTypeHint($reflFunc, $reflParam, array_merge($definitions, $this->paramDefinitions)), '\\');
+            $args[$key] = null;
 
             foreach ($definitions as $j => $definition) {
 
-                if (is_object($definition) && in_array($typeHint, $this->reflector->getImplemented(get_class($definition)))) {
+                // interpret the param as a class name to be instantiated
+                if (isset($definitions[$reflParam->getName()]) || array_key_exists($reflParam->getName(), $definitions)) {
 
-                    $args[$i] = $definition;
+                    $args[$key] = $this->make($definitions[$reflParam->getName()]);
+                    unset($reflParams[$i], $definitions[$reflParam->getName()]);
 
-                    // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
+                    continue 2;
+                }
+
+                // check for predefined keys first
+                if (!is_numeric($key) && (array_key_exists($key, $definitions))) {
+
+                    $args[$key] = $definitions[$key];
+                    unset($reflParams[$i], $definitions[$key]);
+
+                    continue 2;
+                }
+
+                // check if there is a definition set for non-type hinted parameter and if the current index is numeric
+                // check if the type-hinted class/interface is part of the current definition
+                if ((empty($typeHint) && is_numeric($j)) || (is_object($definition) && in_array($typeHint, $this->reflector->getImplemented(get_class($definition))))) {
+
+                    $args[$key] = $definition;
                     unset($reflParams[$i], $definitions[$j]);
 
                     continue 2;
                 }
             }
-
-            // check if the needed instance was shared before
-            $normalisedTypeHint = $this->normalizeName($typeHint);
-            if (!empty($typeHint) && array_key_exists($this->normalizeName($typeHint), $this->shares)) {
-
-                if (is_null($this->shares[$normalisedTypeHint])) {
-
-                    $this->share($this->make($typeHint));
-                }
-
-                $args[$i] = $this->shares[$normalisedTypeHint];
-
-                // because we magically got another definition
-                $definitions = array_values(
-                    array_merge(
-                        array_slice($definitions, 0, $i),
-                        [$i => $args[$i]],
-                        array_slice($definitions, $i)
-                    )
-                );
-
-                // no need to use this again, if not unset, checking for a definition with numeric keys will fail later on
-                unset($reflParams[$i]);
-
-                // no need to loop again, since we found a match already!
-                continue;
-            }
         }
 
         foreach ($reflParams as $i => $reflParam) {
 
+            $key  = $this->isParamNameSuppliedInDefinitions($i, $reflParam, $definitions);
             $name = $reflParam->name;
 
-            if (isset($definitions[$i]) || array_key_exists($i, $definitions)) {
+            if (isset($definitions[$key]) || array_key_exists($key, $definitions)) {
                 // indexed arguments take precedence over named parameters
-                $arg = $definitions[$i];
-            } elseif (isset($definitions[$name]) || array_key_exists($name, $definitions)) {
-                // interpret the param as a class name to be instantiated
-                $arg = $this->make($definitions[$name]);
+                $arg = $definitions[$key];
             } elseif (($prefix = self::A_RAW.$name) && (isset($definitions[$prefix]) || array_key_exists($prefix, $definitions))) {
                 // interpret the param as a raw value to be injected
                 $arg = $definitions[$prefix];
@@ -546,10 +532,34 @@ class Injector
                 $arg = $this->buildArgFromReflParam($reflParam);
             }
 
-            $args[$i] = $arg;
+            $args[$key] = $arg;
         }
 
         return $args;
+    }
+
+    /**
+     * checks if the variable name against in the given definitions
+     *
+     * @param                      $i
+     * @param \ReflectionParameter $reflParam
+     * @param array                $definitions
+     *
+     * @return string
+     */
+    private function isParamNameSuppliedInDefinitions($i, \ReflectionParameter $reflParam, array $definitions)
+    {
+        $prepends = [self::A_RAW, self::A_DELEGATE, self::A_DEFINE];
+
+        foreach ($prepends as $prepend) {
+
+            if (array_key_exists($prepend.$reflParam->getName(), $definitions)) {
+
+                return $prepend.$reflParam->getName();
+            }
+        }
+
+        return $i;
     }
 
     private function buildArgFromParamDefineArr($definition)

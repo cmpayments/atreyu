@@ -262,7 +262,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         // first test, test is with class TestDependency
         $injector = new Injector;
         $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
-        // please note the first item of $arguments has no meaning and is for test purposes only
+        // please note the first item of $arguments has no meaning and is for test purposes only and can also be omitted
         $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new \stdClass(), $injector->make('Atreyu\Test\TestDependency')]);
 
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
@@ -274,7 +274,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         // second test, test is with class TestDependency4
         $injector = new Injector;
         $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
-        // please note the first item of $arguments has no meaning and is for test purposes only
+        // please note the first item of $arguments has no meaning and is for test purposes only and can also be omitted
         $injected = $injector->make('Atreyu\Test\TestMultiDepsNeeded2', [new \stdClass(), $injector->make('Atreyu\Test\TestDependency4')]);
 
         $this->assertInstanceOf('Atreyu\Test\TestDependency4', $injected->testDep);
@@ -290,16 +290,6 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector->share('Atreyu\Test\TestDependency');
         $injector->share('Atreyu\Test\TestDependency2');
         $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', ['var1Value', 'var2Value']);
-
-        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
-        $this->assertEquals('var1Value', $injected->var1);
-        $this->assertEquals('var2Value', $injected->var2);
-
-        $injector = new Injector;
-        $injector->share($injector->make('Atreyu\Test\TestDependency'));
-        $injector->share($injector->make('Atreyu\Test\TestDependency2'));
-        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', ['var1Value', 'var2Value']);
-
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertEquals('var1Value', $injected->var1);
         $this->assertEquals('var2Value', $injected->var2);
@@ -308,7 +298,14 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector->share('Atreyu\Test\TestDependency');
         $injector->share('Atreyu\Test\TestDependency2');
         $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', [':var1' => 'var1Value', 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
 
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', ['var2Value', ':var1' => 'var1Value']);
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertEquals('var1Value', $injected->var1);
         $this->assertEquals('var2Value', $injected->var2);
@@ -317,17 +314,129 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector->share('Atreyu\Test\TestDependency');
         $injector->share('Atreyu\Test\TestDependency2');
         $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', [':var1' => 'var1Value', ':var2' => 'var2Value']);
-
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertEquals('var1Value', $injected->var1);
         $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem', [':var2' => 'var2Value', ':var1' => 'var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithInstanceAsSharedItem2()
+    {
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', ['var1Value', 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', ['var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('UNKNOWN', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', [':var1' => 'var1Value', 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', [':var2' => 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals(null, $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', ['var2Value', ':var1' => 'var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', [':var1' => 'var1Value', ':var2' => 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem2', [':var2' => 'var2Value', ':var1' => 'var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
+    }
+
+    public function testMakeInstanceBasedOnDocBlockHintingWithInstanceAsAliasedItem()
+    {
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem', ['var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem2', ['var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem2');
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals(null, $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem3', ['var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem3');
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals('UNKNOWN', $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem4', ['var1Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+
+        $injector = new Injector;
+        $injector->alias('Atreyu\Test\DepInterface', 'Atreyu\Test\TestDependency3');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromAliasedItem4', []);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency3', $injected->testDep);
+        $this->assertEquals(TestMakeInstanceFromAliasedItem4::TEST_INSIDE_CLASS, $injected->var1);
     }
 
     public function testMakeInstanceStoresShareIfMarkedWithNullInstance()
     {
         $injector = new Injector;
         $injector->share('Atreyu\Test\TestDependency');
-        $injector->make('Atreyu\Test\TestDependency');
+        $obj = $injector->make('Atreyu\Test\TestDependency');
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $obj);
     }
 
     public function testMakeInstanceUsesReflectionForUnknownParamsInMultiBuildWithDeps()
@@ -1312,7 +1421,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
             $this->fail("Atreyu failed to locate the ");
         }
     }
-    
+
     /**
      * @expectedException \Atreyu\InjectionException
      * @expectedExceptionCode \Atreyu\Injector::E_UNDEFINED_PARAM
