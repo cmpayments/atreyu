@@ -325,6 +325,14 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
         $this->assertEquals('var1Value', $injected->var1);
         $this->assertEquals('var2Value', $injected->var2);
+
+        $injector = new Injector;
+        $injector->share('Atreyu\Test\TestDependency');
+        $injector->share('Atreyu\Test\TestDependency2');
+        $injected = $injector->make('Atreyu\Test\TestMakeInstanceFromSharedItem3', ['var1Value', 'var2Value']);
+        $this->assertInstanceOf('Atreyu\Test\TestDependency', $injected->testDep);
+        $this->assertEquals('var1Value', $injected->var1);
+        $this->assertEquals('var2Value', $injected->var2);
     }
 
     public function testMakeInstanceBasedOnDocBlockHintingWithInstanceAsSharedItem2()

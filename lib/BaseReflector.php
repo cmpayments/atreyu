@@ -54,7 +54,7 @@ abstract class BaseReflector
                     // because there were either no arguments given or no argument match was found
                     list($firstDefinition,) = $definitions;
 
-                    if (!in_array(strtolower($firstDefinition), ['int', 'float', 'bool', 'string', 'array', 'null'])) {
+                    if (!in_array(strtolower($firstDefinition), ['int', 'float', 'bool', 'string', 'array', 'null', 'mixed'])) {
 
                         $typeHint = $firstDefinition;
                     }

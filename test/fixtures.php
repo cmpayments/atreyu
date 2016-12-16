@@ -260,6 +260,25 @@ class TestMakeInstanceFromSharedItem2
     }
 }
 
+class TestMakeInstanceFromSharedItem3
+{
+    /**
+     * TestMakeInstanceFromSharedItem3 constructor.
+     *
+     * @param TestDependency  $testDependency
+     * @param mixed           $var1
+     * @param TestDependency2 $testDependency2
+     * @param string          $var2
+     */
+    public function __construct(TestDependency $testDependency, $var1 = 'UNKNOWN', TestDependency2 $testDependency2, $var2 = 'UNKNOWN')
+    {
+        $this->testDep  = $testDependency;
+        $this->var1     = $var1;
+        $this->testDep2 = $testDependency;
+        $this->var2     = $var2;
+    }
+}
+
 class TestMakeInstanceFromAliasedItem
 {
     /**
@@ -271,7 +290,7 @@ class TestMakeInstanceFromAliasedItem
     public function __construct(DepInterface $testDependency, $var1)
     {
         $this->testDep = $testDependency;
-        $this->var1 = $var1;
+        $this->var1    = $var1;
     }
 }
 
@@ -286,7 +305,7 @@ class TestMakeInstanceFromAliasedItem2
     public function __construct(DepInterface $testDependency, $var1 = null)
     {
         $this->testDep = $testDependency;
-        $this->var1 = $var1;
+        $this->var1    = $var1;
     }
 }
 
@@ -301,7 +320,7 @@ class TestMakeInstanceFromAliasedItem3
     public function __construct(DepInterface $testDependency, $var1 = 'UNKNOWN')
     {
         $this->testDep = $testDependency;
-        $this->var1 = $var1;
+        $this->var1    = $var1;
     }
 }
 
@@ -318,7 +337,7 @@ class TestMakeInstanceFromAliasedItem4
     public function __construct(DepInterface $testDependency, $var1 = self::TEST_INSIDE_CLASS)
     {
         $this->testDep = $testDependency;
-        $this->var1 = $var1;
+        $this->var1    = $var1;
     }
 }
 
