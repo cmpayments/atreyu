@@ -3,6 +3,15 @@
 ### Todo
 - nothing
 
+### Changelog [1.6.0] – 08/02/2017  
+- fast forwarded 5 commits Auryn:master > Atreyu:master
+
+- Add example for [#78](https://github.com/rdlowrey/auryn/issues/78) [54b2fed](https://github.com/cmpayments/atreyu/commit/54b2fedff1c760879cfe3ab1baea9dcb7239f07e)
+- Merge pull request [#150](https://github.com/rdlowrey/auryn/pull/150) from kelunik/phpstorm-meta [a61e78c](https://github.com/cmpayments/atreyu/commit/a61e78cc3f964b0ab5d170aae19f54af5609e9dc)
+- Merge pull request [#137](https://github.com/rdlowrey/auryn/pull/137) from Danack/prepare_exception [924d0cd](https://github.com/cmpayments/atreyu/commit/924d0cdf80f227c91fc87a5212ed4677b22e7fb8)
+- Add example to delegate parameters[3f65078](https://github.com/cmpayments/atreyu/commit/3f6507851e6197eec6c1ce87de35b0a92dfa10be)
+- Add PHPStorm hints [5bce335](https://github.com/cmpayments/atreyu/commit/5bce335ea7eda86dc98f4369af81077f5cde738a)
+
 ### Changelog [1.5.0] – 08/02/2017  
 Injector:
 
