@@ -3,6 +3,15 @@
 ### Todo
 - nothing
 
+### Changelog [1.5.0] – 08/02/2017  
+Injector:
+
+- added method hasShare($nameOrInstance) functionality, it is now possible to request if a class name (string) or instance has previously been shared with the container
+
+Tests:
+
+- Added tests accordingly
+
 ### Changelog [1.4.1] – 16/12/2016  
 Injector:
 

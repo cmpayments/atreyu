@@ -1439,4 +1439,65 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
         $injector->define('Atreyu\Test\ParentWithConstructor', [':foo' => 'parent']);
         $injector->make('Atreyu\Test\ChildWithoutConstructor');
     }
+
+    public function testHasShareBasedOnInstance()
+    {
+        $injector = new Injector;
+        $sharedInstance = $injector->make('Atreyu\Test\TestDependency');
+        $injector->share($sharedInstance);
+
+        $notSharedInstance = $injector->make('Atreyu\Test\TestDependency2');
+
+        $this->assertTrue($injector->hasShare($sharedInstance));
+        $this->assertFalse($injector->hasShare($notSharedInstance));
+    }
+
+    public function testHasShareBasedOnClassName()
+    {
+        $injector = new Injector;
+        $sharedInstance = $injector->make('Atreyu\Test\TestDependency');
+        $injector->share($sharedInstance);
+
+        $this->assertTrue($injector->hasShare('Atreyu\Test\TestDependency'));
+        $this->assertFalse($injector->hasShare('Atreyu\Test\TestDependency2'));
+    }
+
+    /**
+     * @expectedException \Atreyu\ConfigException
+     * @expectedExceptionCode \Atreyu\Injector::E_HAS_SHARE_ARGUMENT
+     */
+    public function testHasShareException()
+    {
+        $injector = new Injector;
+        $sharedInstance = $injector->make('Atreyu\Test\TestDependency');
+        $injector->share($sharedInstance);
+
+        $injector->hasShare(true);
+    }
+
+    /**
+     * @expectedException \Atreyu\ConfigException
+     * @expectedExceptionCode \Atreyu\Injector::E_HAS_SHARE_ARGUMENT
+     */
+    public function testHasShareException2()
+    {
+        $injector = new Injector;
+        $sharedInstance = $injector->make('Atreyu\Test\TestDependency');
+        $injector->share($sharedInstance);
+
+        $injector->hasShare(1);
+    }
+
+    /**
+     * @expectedException \Atreyu\ConfigException
+     * @expectedExceptionCode \Atreyu\Injector::E_HAS_SHARE_ARGUMENT
+     */
+    public function testHasShareException3()
+    {
+        $injector = new Injector;
+        $sharedInstance = $injector->make('Atreyu\Test\TestDependency');
+        $injector->share($sharedInstance);
+
+        $injector->hasShare(1.4);
+    }
 }

@@ -38,6 +38,8 @@ class Injector
     const M_CYCLIC_DEPENDENCY = "Detected a cyclic dependency while provisioning %s";
     const E_MAKING_FAILED = 12;
     const M_MAKING_FAILED = "Making %s did not result in an object, instead result is of type '%s'";
+    const E_HAS_SHARE_ARGUMENT = 13;
+    const M_HAS_SHARE_ARGUMENT = "%s::hasShare() requires a string class name or object instance at Argument 1; %s specified";
 
     private $reflector;
     private $classDefinitions = [];
@@ -145,6 +147,34 @@ class Injector
     private function normalizeName($className)
     {
         return ltrim(strtolower($className), '\\');
+    }
+
+    /**
+     * Checks if an className or instance has previously been shared with the container
+     *
+     * @param string|object $nameOrInstance
+     *
+     * @return bool
+     * @throws ConfigException
+     */
+    public function hasShare($nameOrInstance)
+    {
+        if (is_string($nameOrInstance)) {
+            $normalizedName = $this->normalizeName($nameOrInstance);
+        } elseif (is_object($nameOrInstance)) {
+            $normalizedName = $this->normalizeName(get_class($nameOrInstance));
+        } else {
+            throw new ConfigException(
+                sprintf(
+                    self::M_HAS_SHARE_ARGUMENT,
+                    __CLASS__,
+                    gettype($nameOrInstance)
+                ),
+                self::E_HAS_SHARE_ARGUMENT
+            );
+        }
+
+        return isset($this->shares[$this->normalizeName($normalizedName)]);
     }
 
     /**
