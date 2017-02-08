@@ -18,7 +18,7 @@ class A {
     }
 }
 
-$injector = new Auryn\Injector;
+$injector = new Atreyu\Injector;
 
 $injector->define(A::class, [
     "+a" => function () {

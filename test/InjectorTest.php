@@ -1391,7 +1391,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     {
         $injector = new Injector;
         $invalidCallable = 'This_does_not_exist';
-        $this->setExpectedException('Auryn\InjectionException', $invalidCallable);
+        $this->setExpectedException('Atreyu\InjectionException', $invalidCallable);
         $injector->prepare("StdClass", $invalidCallable);
     }
 
